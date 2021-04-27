@@ -1,13 +1,14 @@
 import { MikroORM } from "@mikro-orm/core";
 import path from "path";
 import { __prod__ } from "./constants";
+import { User } from "./entities/User";
 
 export default {
   migrations: {
     path: path.join(__dirname, "./migrations"), 
     pattern: /^[\w-]+\d+\.[tj]s$/,
   },
-  entities: [],
+  entities: [User],
   dbName: "test",
   type: "postgresql",
   user: "postgres",

@@ -1,0 +1,25 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "shopify challenge backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "run-tests",
+    "watch": "tsc -w",
+    "dev": "nodemon dist/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^15.0.0",
+    "typescript": "^4.2.4"
+  },
+  "dependencies": {
+    "@mikro-orm/cli": "^4.5.4",
+    "@mikro-orm/core": "^4.5.4",
+    "@mikro-orm/migrations": "^4.5.4",
+    "@mikro-orm/postgresql": "^4.5.4",
+    "pg": "^8.6.0",
+    "type-graphql": "^1.1.1"
+  }
+}

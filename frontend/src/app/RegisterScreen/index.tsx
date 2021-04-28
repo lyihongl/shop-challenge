@@ -1,16 +1,17 @@
-import React, { useContext, useState } from "react";
-import { Button, Grid, TextField } from "@material-ui/core";
-import { useLoginMutation } from "../../generated/graphql";
+import { Grid, Button, TextField } from "@material-ui/core";
+import React, { useState, useContext } from "react";
 import { UserStateContext } from "../../App";
-const LoginScreen = () => {
-  const [login] = useLoginMutation();
+import { useRegisterUserMutation } from "../../generated/graphql";
+
+const RegisterScreen = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const userStateContext = useContext(UserStateContext);
-  const handleLogin = async () => {
-    const res = await login({ variables: { username, password } });
-    if (!res.errors && res.data?.login.user?.id) {
-      userStateContext.setUserid(res.data.login.user.id);
+  const [register] = useRegisterUserMutation();
+  const handleRegister = async () => {
+    const res = await register({ variables: { username, password } });
+    if (!res.errors && res.data?.registerUser.user?.id) {
+      userStateContext.setUserid(res.data.registerUser.user.id);
     }
   };
   return (
@@ -33,10 +34,10 @@ const LoginScreen = () => {
         />
       </Grid>
       <Grid item xs={12}>
-        <Button onClick={handleLogin}>Login</Button>
+        <Button onClick={handleRegister}>Register</Button>
       </Grid>
     </Grid>
   );
 };
 
-export default LoginScreen;
+export default RegisterScreen;

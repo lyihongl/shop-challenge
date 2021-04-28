@@ -47,7 +47,7 @@ export class UserResolver {
   me(@Ctx() { authJwt, res }: ResolverContext) {
     const token = jwt.sign(
       {
-        userId: authJwt!.userid,
+        userid: authJwt!.userid,
       },
       jwt_secret,
       { expiresIn: 60 * 60 * 24 * 30 }
@@ -61,7 +61,7 @@ export class UserResolver {
       domain: "localhost",
       path: "/",
     });
-    return "ok";
+    return authJwt!.userid;
   }
   @Mutation(() => UserResponse)
   async registerUser(
@@ -90,7 +90,7 @@ export class UserResolver {
     }
     const token = jwt.sign(
       {
-        userId: user.id,
+        userid: user.id,
       },
       jwt_secret,
       { expiresIn: 60 * 60 * 24 * 30 }
@@ -140,7 +140,7 @@ export class UserResolver {
     }
     const token = jwt.sign(
       {
-        userId: user.id,
+        userid: user.id,
       },
       jwt_secret,
       { expiresIn: 60 * 60 * 24 * 30 }

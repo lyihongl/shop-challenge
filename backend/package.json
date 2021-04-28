@@ -29,6 +29,7 @@
     "@types/uuid": "^8.3.0",
     "apollo-server-express": "^2.22.2",
     "argon2": "^0.27.2",
+    "aws-sdk": "^2.894.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "express": "^4.17.1",

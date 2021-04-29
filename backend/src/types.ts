@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { EntityManager, IDatabaseDriver, Connection } from "@mikro-orm/core";
 import { PostgreSqlDriver, SqlEntityManager } from "@mikro-orm/postgresql";
+import { S3Client } from "@aws-sdk/client-s3";
+import { ReadStream } from "fs";
+import { FileUpload } from "graphql-upload";
 
 export type AuthJWT = {
   userid: string;
@@ -14,4 +17,6 @@ export type ResolverContext = {
   req: Request;
   res: Response;
   authJwt: AuthJWT | null;
+  s3Client: S3Client;
 };
+

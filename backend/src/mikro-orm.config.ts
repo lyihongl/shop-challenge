@@ -1,6 +1,7 @@
 import { MikroORM } from "@mikro-orm/core";
 import path from "path";
 import { __prod__ } from "./constants";
+import { MyImage } from "./entities/Images";
 import { User } from "./entities/User";
 
 export default {
@@ -8,7 +9,7 @@ export default {
     path: path.join(__dirname, "./migrations"), 
     pattern: /^[\w-]+\d+\.[tj]s$/,
   },
-  entities: [User],
+  entities: [User, MyImage],
   dbName: "test",
   type: "postgresql",
   user: "postgres",

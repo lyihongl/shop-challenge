@@ -1,7 +1,5 @@
-import React, { createContext, useEffect, useState } from "react";
-import logo from "./logo.svg";
+import React, { createContext, Suspense, useEffect, useState } from "react";
 import "./App.css";
-import LoginScreen from "./app/LoginScreen";
 import {
   ApolloClient,
   ApolloProvider,
@@ -10,7 +8,9 @@ import {
   InMemoryCache,
   useQuery,
 } from "@apollo/client";
+import WaitFor from "./components/WaitFor";
 import NotLoggedInScreen from "./app/NotLoggedInScreen";
+import ImageScreen from "./app/ImageScreen";
 
 const httpLink = new HttpLink({
   uri: "http://localhost:4000/graphql",
@@ -30,7 +30,7 @@ const CHECK_LOGIN = gql`
 `;
 
 type LoginCheckResponse = {
-  me: String;
+  me: string;
 };
 
 export interface IUserState {
@@ -54,14 +54,39 @@ function App() {
   useEffect(() => {
     if (loginError || !loginData?.me) {
       setUserid("");
+    } else {
+      setUserid(loginData.me);
     }
   }, [loginData, checkLoginLoading, loginError]);
+
+  const apiStatusMap = {
+    error: "error",
+    loading: "loading",
+    complete: "complete",
+  };
+
+  const apiStatus = (): string => {
+    if (loginError && loginError.message !== "not auth") {
+      return apiStatusMap.error;
+    } else if (checkLoginLoading) {
+      return apiStatusMap.loading;
+    } else {
+      return apiStatusMap.complete;
+    }
+  };
 
   return (
     <div style={{ padding: "20px" }}>
       <ApolloProvider client={client}>
         <UserStateContext.Provider value={{ userid, setUserid }}>
-          {userid === "" ? <NotLoggedInScreen /> : <div>test</div>}
+          <WaitFor
+            apiStatus={apiStatus()}
+            apiStatusMap={apiStatusMap}
+            onError={<>An error has occured</>}
+            fallback={<>loading...</>}
+          >
+            {userid === "" ? <NotLoggedInScreen /> : <ImageScreen />}
+          </WaitFor>
         </UserStateContext.Provider>
       </ApolloProvider>
     </div>

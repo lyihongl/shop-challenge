@@ -19,13 +19,14 @@ import {
 import { exec } from "child_process";
 import { ImageResolver } from "./resolvers/images";
 import { graphqlUploadExpress } from "graphql-upload";
+import awsKeys from "./aws.json";
 
 const main = async () => {
   const s3Client = new S3Client({
     region: "us-east-1",
     credentials: {
-      accessKeyId: "AKIA37M3RY6GDTI3HVO7",
-      secretAccessKey: "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",
+      accessKeyId: awsKeys.AWSAccessKeyId,
+      secretAccessKey: awsKeys.AWSSecretKey,
     },
   });
   // const data = await s3Client.send(
@@ -78,7 +79,8 @@ const main = async () => {
     }),
     uploads: false,
   });
-  app.use(graphqlUploadExpress({ maxFieldSize: 1000000000000000, maxFiles: 10 }));
+  // cosplay [name of service i forget] with 25mb file limit
+  app.use(graphqlUploadExpress({ maxFileSize: 2.5e7, maxFiles: 10 }));
   apolloServer.applyMiddleware({ app, cors: false });
   app.listen(4000);
 };

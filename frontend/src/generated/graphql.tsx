@@ -12,6 +12,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: any;
 };
 
 export type FieldError = {
@@ -24,6 +26,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   registerUser: UserResponse;
   login: UserResponse;
+  uploadImage: UploadFileResponse;
 };
 
 
@@ -36,9 +39,42 @@ export type MutationLoginArgs = {
   options: UsernamePasswordInput;
 };
 
+
+export type MutationUploadImageArgs = {
+  uploadInput: UploadImgInput;
+  file: Scalars['Upload'];
+};
+
+export type MyImage = {
+  __typename?: 'MyImage';
+  id: Scalars['String'];
+  userid: User;
+  title: Scalars['String'];
+  desc: Scalars['String'];
+  path: Scalars['String'];
+  isPrivate: Scalars['Boolean'];
+  createdAt: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
   me: Scalars['String'];
+  getAllImages: Array<MyImage>;
+};
+
+
+export type UploadFileResponse = {
+  __typename?: 'UploadFileResponse';
+  filename: Scalars['String'];
+  mimetype: Scalars['String'];
+  encoding: Scalars['String'];
+  url: Scalars['String'];
+};
+
+export type UploadImgInput = {
+  title: Scalars['String'];
+  desc: Scalars['String'];
+  private: Scalars['Boolean'];
 };
 
 export type User = {
@@ -93,6 +129,35 @@ export type RegisterUserMutation = (
       & Pick<FieldError, 'field'>
     )>> }
   ) }
+);
+
+export type UploadImageMutationVariables = Exact<{
+  file: Scalars['Upload'];
+  uploadInput: UploadImgInput;
+}>;
+
+
+export type UploadImageMutation = (
+  { __typename?: 'Mutation' }
+  & { uploadImage: (
+    { __typename?: 'UploadFileResponse' }
+    & Pick<UploadFileResponse, 'filename'>
+  ) }
+);
+
+export type GetAllImagesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllImagesQuery = (
+  { __typename?: 'Query' }
+  & { getAllImages: Array<(
+    { __typename?: 'MyImage' }
+    & Pick<MyImage, 'path' | 'desc' | 'createdAt'>
+    & { userid: (
+      { __typename?: 'User' }
+      & Pick<User, 'username'>
+    ) }
+  )> }
 );
 
 
@@ -171,3 +236,76 @@ export function useRegisterUserMutation(baseOptions?: Apollo.MutationHookOptions
 export type RegisterUserMutationHookResult = ReturnType<typeof useRegisterUserMutation>;
 export type RegisterUserMutationResult = Apollo.MutationResult<RegisterUserMutation>;
 export type RegisterUserMutationOptions = Apollo.BaseMutationOptions<RegisterUserMutation, RegisterUserMutationVariables>;
+export const UploadImageDocument = gql`
+    mutation uploadImage($file: Upload!, $uploadInput: UploadImgInput!) {
+  uploadImage(file: $file, uploadInput: $uploadInput) {
+    filename
+  }
+}
+    `;
+export type UploadImageMutationFn = Apollo.MutationFunction<UploadImageMutation, UploadImageMutationVariables>;
+
+/**
+ * __useUploadImageMutation__
+ *
+ * To run a mutation, you first call `useUploadImageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUploadImageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [uploadImageMutation, { data, loading, error }] = useUploadImageMutation({
+ *   variables: {
+ *      file: // value for 'file'
+ *      uploadInput: // value for 'uploadInput'
+ *   },
+ * });
+ */
+export function useUploadImageMutation(baseOptions?: Apollo.MutationHookOptions<UploadImageMutation, UploadImageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UploadImageMutation, UploadImageMutationVariables>(UploadImageDocument, options);
+      }
+export type UploadImageMutationHookResult = ReturnType<typeof useUploadImageMutation>;
+export type UploadImageMutationResult = Apollo.MutationResult<UploadImageMutation>;
+export type UploadImageMutationOptions = Apollo.BaseMutationOptions<UploadImageMutation, UploadImageMutationVariables>;
+export const GetAllImagesDocument = gql`
+    query getAllImages {
+  getAllImages {
+    path
+    userid {
+      username
+    }
+    desc
+    createdAt
+  }
+}
+    `;
+
+/**
+ * __useGetAllImagesQuery__
+ *
+ * To run a query within a React component, call `useGetAllImagesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllImagesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllImagesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllImagesQuery(baseOptions?: Apollo.QueryHookOptions<GetAllImagesQuery, GetAllImagesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllImagesQuery, GetAllImagesQueryVariables>(GetAllImagesDocument, options);
+      }
+export function useGetAllImagesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllImagesQuery, GetAllImagesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllImagesQuery, GetAllImagesQueryVariables>(GetAllImagesDocument, options);
+        }
+export type GetAllImagesQueryHookResult = ReturnType<typeof useGetAllImagesQuery>;
+export type GetAllImagesLazyQueryHookResult = ReturnType<typeof useGetAllImagesLazyQuery>;
+export type GetAllImagesQueryResult = Apollo.QueryResult<GetAllImagesQuery, GetAllImagesQueryVariables>;

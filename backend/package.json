@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.13.1",
+    "@aws-sdk/s3-request-presigner": "^3.13.1",
     "@mikro-orm/cli": "^4.5.3",
     "@mikro-orm/core": "^4.5.3",
     "@mikro-orm/migrations": "^4.5.3",

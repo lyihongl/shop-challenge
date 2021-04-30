@@ -8,17 +8,16 @@ import {
   InMemoryCache,
   useQuery,
 } from "@apollo/client";
+import { createUploadLink } from "apollo-upload-client";
 import WaitFor from "./components/WaitFor";
 import NotLoggedInScreen from "./app/NotLoggedInScreen";
 import ImageScreen from "./app/ImageScreen";
 
-const httpLink = new HttpLink({
-  uri: "http://localhost:4000/graphql",
-  credentials: "include",
-});
-
 export const client = new ApolloClient({
-  link: httpLink,
+  link: createUploadLink({
+    uri: "http://localhost:4000/graphql",
+    credentials: "include",
+  }),
   cache: new InMemoryCache(),
   credentials: "include",
 });

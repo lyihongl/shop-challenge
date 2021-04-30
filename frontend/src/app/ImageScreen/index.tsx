@@ -1,6 +1,7 @@
 import { Button, Grid, Dialog } from "@material-ui/core";
 import { useState } from "react";
 import UploadImageModal from "./components/UploadImageModal";
+import ImageFeed from "./components/ImageFeed";
 
 const ImageScreen = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -15,6 +16,7 @@ const ImageScreen = () => {
       <Dialog open={openModal} onClose={handleClose} fullWidth maxWidth="md">
         <UploadImageModal onClose={handleClose} />
       </Dialog>
+      <ImageFeed />
     </Grid>
   );
 };

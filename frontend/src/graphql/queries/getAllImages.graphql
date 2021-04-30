@@ -1,0 +1,10 @@
+query getAllImages{
+  getAllImages {
+    path
+    userid {
+      username
+    }
+    desc
+    createdAt
+  }
+}

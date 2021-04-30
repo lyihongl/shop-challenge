@@ -27,7 +27,14 @@ export class MyImage {
   @Property()
   path!: string;
 
+  @Field()
+  @Property()
+  isPrivate: boolean;
+
   @Field(() => String)
   @Property({ type: "date" })
   createdAt = new Date();
+
+  @Property()
+  awsKey!: string;
 }

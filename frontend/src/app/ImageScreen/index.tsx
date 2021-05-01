@@ -1,5 +1,14 @@
-import { Button, Grid, Dialog, AppBar, Tab, Tabs, Box, Typography } from "@material-ui/core";
-import { useState } from "react";
+import {
+  Button,
+  Grid,
+  Dialog,
+  AppBar,
+  Tab,
+  Tabs,
+  Box,
+  Typography,
+} from "@material-ui/core";
+import { createContext, useState } from "react";
 import UploadImageModal from "./components/UploadImageModal";
 import { MyImageFeed, AllImageFeed } from "./components/ImageFeed";
 
@@ -36,9 +45,15 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
+export const ShouldRefetchContext = createContext({
+  shouldRefetch: false,
+  setShouldRefetch: (b: boolean) => {},
+});
+
 const ImageScreen = () => {
   const [openModal, setOpenModal] = useState(false);
   const [tab, setTab] = useState(0);
+  const [shouldRefetch, setShouldRefetch] = useState(false);
   const handleClose = (): void => {
     setOpenModal(false);
   };
@@ -46,7 +61,7 @@ const ImageScreen = () => {
     setTab(newValue);
   };
   return (
-    <>
+    <ShouldRefetchContext.Provider value={{ shouldRefetch, setShouldRefetch }}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Button onClick={() => setOpenModal(true)}>Upload Image</Button>
@@ -71,7 +86,7 @@ const ImageScreen = () => {
       <TabPanel value={tab} index={1}>
         <MyImageFeed />
       </TabPanel>
-    </>
+    </ShouldRefetchContext.Provider>
   );
 };
 

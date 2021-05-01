@@ -8,10 +8,11 @@ import {
   Paper,
   TextField,
   Switch,
-  CircularProgress
+  CircularProgress,
 } from "@material-ui/core";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { ShouldRefetchContext } from "../..";
 import { useUploadImageMutation } from "../../../../generated/graphql";
 import ImagePreview from "./ImagePreview";
 
@@ -33,6 +34,7 @@ const UploadImageModal = ({ onClose }: { onClose: () => void }) => {
   const [desc, setDesc] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { shouldRefetch, setShouldRefetch } = useContext(ShouldRefetchContext);
   const handleImage = (acceptedFiles: File[]): void => {
     setFile(acceptedFiles[0]);
   };
@@ -48,6 +50,7 @@ const UploadImageModal = ({ onClose }: { onClose: () => void }) => {
       variables: {
         file,
         uploadInput: {
+          tags: ["test", "test2"],
           title,
           desc,
           private: isPrivate,
@@ -56,6 +59,7 @@ const UploadImageModal = ({ onClose }: { onClose: () => void }) => {
     })
       .then(() => setIsLoading(false))
       .finally(() => {
+        setShouldRefetch(!shouldRefetch);
         onClose();
       })
       .catch((e) => console.log(e));

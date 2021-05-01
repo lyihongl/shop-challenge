@@ -83,6 +83,7 @@ export type UploadImgInput = {
   title: Scalars['String'];
   desc: Scalars['String'];
   private: Scalars['Boolean'];
+  tags: Array<Scalars['String']>;
 };
 
 export type User = {

@@ -112,7 +112,7 @@ export class UserResolver {
     @Arg("options") options: UsernamePasswordInput,
     @Ctx() { res, em }: ResolverContext
   ) {
-    const user = await em.findOneOrFail(User, {
+    const user = await em.findOne(User, {
       username: options.username,
     });
 

@@ -1,13 +1,16 @@
 import {
+  DeleteObjectCommand,
   GetObjectCommand,
   PutObjectCommand,
   PutObjectCommandInput,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import deepcopy from "deepcopy";
 import isAuth from "../middleware/isAuth";
 import {
   Arg,
   Ctx,
+  emitSchemaDefinitionFile,
   Field,
   InputType,
   Mutation,
@@ -21,6 +24,7 @@ import { ResolverContext } from "src/types";
 import fs, { ReadStream } from "fs";
 import { PassThrough } from "stream";
 import { MyImage } from "../entities/Images";
+import { MyTag } from "../entities/Tags";
 
 @ObjectType()
 export class UploadFileResponse {
@@ -49,10 +53,15 @@ export class UploadFileResponse {
 export class UploadImgInput {
   @Field()
   title: string;
+
   @Field()
   desc: string;
+
   @Field()
   private: boolean;
+
+  @Field(() => [String])
+  tags: string[];
 }
 // @InputType()
 // export class File {
@@ -71,31 +80,101 @@ const awsPrefix = "https://shop-challenge.s3.amazonaws.com/";
 export class ImageResolver {
   @UseMiddleware(isAuth)
   @Query(() => [MyImage])
+  async getMyImages(@Ctx() { s3Client, em, authJwt }: ResolverContext) {
+    try {
+      const images = await em.find(MyImage, {
+        userid: authJwt!.userid,
+      });
+      await em.populate(images, ["userid"]);
+      // let responseImages = deepcopy(images);
+
+      const responseImages = await Promise.all(
+        images.map(
+          (e) =>
+            new Promise<MyImage>((resolve, reject) => {
+              if (e.isPrivate) {
+                const getObject = new GetObjectCommand({
+                  Bucket: "shop-challenge",
+                  Key: e.awsKey,
+                });
+
+                getSignedUrl(s3Client, getObject)
+                  .then((url) => {
+                    resolve({
+                      ...e,
+                      path: url,
+                    });
+                  })
+                  .catch((err) => reject(err));
+              } else {
+                resolve(e);
+              }
+            })
+        )
+      );
+      return responseImages;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  @UseMiddleware(isAuth)
+  @Query(() => [MyImage])
   async getAllImages(@Ctx() { s3Client, em, authJwt }: ResolverContext) {
     try {
       const images = await em.find(MyImage, {
         $or: [{ isPrivate: false }, { userid: authJwt!.userid }],
       });
       await em.populate(images, ["userid"]);
-      images.forEach((e) => {
-        if (e.isPrivate) {
-          const getObject = new GetObjectCommand({
-            Bucket: "shop-challenge",
-            Key: e.awsKey,
-          });
-          getSignedUrl(s3Client, getObject).then((url) => (e.path = url));
-        }
-      });
-      // const url = await getSignedUrl(s3Client, getObject);
-      // images[1].path = url;
-      // console.log(url);
-      // console.log(images);
-      return images;
+      // let responseImages = deepcopy(images);
+
+      const responseImages = await Promise.all(
+        images.map(
+          (e) =>
+            new Promise<MyImage>((resolve, reject) => {
+              if (e.isPrivate) {
+                const getObject = new GetObjectCommand({
+                  Bucket: "shop-challenge",
+                  Key: e.awsKey,
+                });
+
+                getSignedUrl(s3Client, getObject)
+                  .then((url) => {
+                    resolve({
+                      ...e,
+                      path: url,
+                    });
+                  })
+                  .catch((err) => reject(err));
+              } else {
+                resolve(e);
+              }
+            })
+        )
+      );
+      return responseImages;
     } catch (e) {
       throw e;
     }
   }
 
+  @UseMiddleware(isAuth)
+  @Mutation(() => Boolean)
+  async deleteImage(
+    @Arg("awsKey") awsKey: string,
+    @Ctx() { s3Client, em, authJwt }: ResolverContext
+  ) {
+    const image = await em.findOne(MyImage, { awsKey });
+    if (authJwt?.userid && image?.userid.id === authJwt.userid) {
+      await s3Client.send(
+        new DeleteObjectCommand({ Bucket: "shop-challenge", Key: awsKey })
+      );
+
+      await em.getRepository(MyImage).remove(image!).flush();
+      return true;
+    }
+    return false;
+  }
   @UseMiddleware(isAuth)
   @Mutation(() => UploadFileResponse)
   async uploadImage(
@@ -112,7 +191,17 @@ export class ImageResolver {
     const awsKey = img.id + "-" + file.filename;
     img.path = awsPrefix + awsKey;
     img.awsKey = awsKey;
+
+    const tags = uploadInput.tags.map((tag) => {
+      return em.create(MyTag, {
+        imageid: img,
+        tag: tag,
+        userid: authJwt!.userid,
+      });
+    });
+
     await em.persistAndFlush(img);
+    await em.persistAndFlush(tags);
     // console.log(img)
     const res = await new Promise<UploadFileResponse>((resolve, reject) => {
       let buffer: Buffer[] = [];
@@ -143,39 +232,6 @@ export class ImageResolver {
       });
     });
 
-    // const uploadStream = () => {
-    //   const pass = new PassThrough();
-    //   const uploadParams: PutObjectCommandInput = {
-    //     Bucket: "shop-challenge",
-    //     Key: "test.jpg",
-    //     ACL: "public-read",
-    //     Body: pass,
-    //   };
-    //   return {
-    //     writeStream: pass,
-    //     promise: s3Client.send(new PutObjectCommand(uploadParams)),
-    //   };
-    // };
-
-    // file.createReadStream().pipe(writeStre)
-    // const { writeStream, promise } = uploadStream();
-    // const pipeline = file.createReadStream().pipe(writeStream);
-    // return promise
-    //   .then(() => {
-    //     return "ok";
-    //   })
-    //   .catch((e) => {
-    //     throw e;
-    //   });
-    // const img = file.createReadStream();
-    // console.log(img);
-    // return new Promise((resolve, reject) => {
-    //   file
-    //     .createReadStream()
-    //     .pipe(createWriteStream(__dirname + `/${file.filename}`))
-    //     .on("finish", () => resolve("ok"))
-    //     .on("error", () => reject("nope"));
-    // });
     return res;
   }
 }

@@ -1,6 +1,7 @@
 import { ApolloQueryResult } from "@apollo/client";
 import { Grid } from "@material-ui/core";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { ShouldRefetchContext } from "../..";
 import {
   Exact,
   GetAllImagesQuery,
@@ -22,13 +23,12 @@ interface DataType {
 const ImageFeed = ({
   data,
   enableDelete,
-  refetch,
 }: {
   data: DataType[] | undefined;
   enableDelete: boolean;
-  refetch: () => void;
 }) => {
   const [deleteImage] = useDeleteImageMutation();
+  const { shouldRefetch, setShouldRefetch } = useContext(ShouldRefetchContext);
   return (
     <Grid container spacing={2}>
       {data?.map((e) => {
@@ -42,8 +42,11 @@ const ImageFeed = ({
               onDelete={
                 enableDelete
                   ? () => {
-                      deleteImage({ variables: { awsKey: e.awsKey } });
-                      refetch();
+                      deleteImage({ variables: { awsKey: e.awsKey } }).then(
+                        () => {
+                          setShouldRefetch(!shouldRefetch);
+                        }
+                      );
                     }
                   : undefined
               }
@@ -57,30 +60,22 @@ const ImageFeed = ({
 
 const AllImageFeed = () => {
   const { loading, data, error, refetch } = useGetAllImagesQuery();
-  refetch();
+  const { shouldRefetch } = useContext(ShouldRefetchContext);
+  useEffect(() => {
+    refetch();
+  }, [shouldRefetch]);
 
-  return (
-    <ImageFeed
-      data={data?.getAllImages}
-      enableDelete={false}
-      refetch={() => refetch()}
-    />
-  );
+  return <ImageFeed data={data?.getAllImages} enableDelete={false} />;
 };
 const MyImageFeed = () => {
   const { loading, data, error, refetch } = useGetMyImagesQuery();
-  refetch();
+  const { shouldRefetch } = useContext(ShouldRefetchContext);
+  useEffect(() => {
+    console.log("refetch switched");
+    refetch();
+  }, [shouldRefetch]);
 
-  return (
-    <ImageFeed
-      data={data?.getMyImages}
-      enableDelete={true}
-      refetch={() => {
-        console.log("calling refetch");
-        refetch();
-      }}
-    />
-  );
+  return <ImageFeed data={data?.getMyImages} enableDelete={true} />;
 };
 
 export default ImageFeed;

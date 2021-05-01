@@ -15,10 +15,6 @@ import { useState } from "react";
 const useStyles = makeStyles({
   isPrivate: {
     backgroundColor: "rgba(216, 221, 230, 1);",
-    height: "380px",
-  },
-  normal: {
-    height: "380px",
   },
 });
 
@@ -38,13 +34,29 @@ const ImageFrame = ({
   const classes = useStyles();
   const [confirmDelete, setConfirmDelete] = useState(false);
   return (
-    <Card className={isPrivate ? classes.isPrivate : classes.normal}>
-      <div style={{ padding: "8px" }}>
-        <Typography variant="h4">{title}</Typography>
-        <div style={{ height: "250px" }}>
-          <img style={{ maxWidth: "auto", maxHeight: "250px" }} src={src} />
-        </div>
-        <Typography variant="body1">{desc}</Typography>
+    <Card className={isPrivate ? classes.isPrivate : ""}>
+      <div style={{ padding: "8px", maxWidth: "300px" }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Typography variant="h4" style={{ overflowWrap: "break-word" }}>
+              {title}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <div style={{ width: "300px" }}>
+              <img
+                style={{
+                  maxHeight: "auto",
+                  maxWidth: "300px",
+                }}
+                src={src}
+              />
+            </div>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="body1">{desc}</Typography>
+          </Grid>
+        </Grid>
         {isPrivate && (
           <div>
             <Typography variant="caption">

@@ -4,3 +4,4 @@ dist
 *.jpg
 *.png
 aws.json
+*.env

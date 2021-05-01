@@ -26,6 +26,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   registerUser: UserResponse;
   login: UserResponse;
+  deleteImage: Scalars['Boolean'];
   uploadImage: UploadFileResponse;
 };
 
@@ -37,6 +38,11 @@ export type MutationRegisterUserArgs = {
 
 export type MutationLoginArgs = {
   options: UsernamePasswordInput;
+};
+
+
+export type MutationDeleteImageArgs = {
+  awsKey: Scalars['String'];
 };
 
 
@@ -54,11 +60,13 @@ export type MyImage = {
   path: Scalars['String'];
   isPrivate: Scalars['Boolean'];
   createdAt: Scalars['String'];
+  awsKey: Scalars['String'];
 };
 
 export type Query = {
   __typename?: 'Query';
   me: Scalars['String'];
+  getMyImages: Array<MyImage>;
   getAllImages: Array<MyImage>;
 };
 
@@ -93,6 +101,16 @@ export type UsernamePasswordInput = {
   username: Scalars['String'];
   password: Scalars['String'];
 };
+
+export type DeleteImageMutationVariables = Exact<{
+  awsKey: Scalars['String'];
+}>;
+
+
+export type DeleteImageMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteImage'>
+);
 
 export type LoginMutationVariables = Exact<{
   username: Scalars['String'];
@@ -152,7 +170,22 @@ export type GetAllImagesQuery = (
   { __typename?: 'Query' }
   & { getAllImages: Array<(
     { __typename?: 'MyImage' }
-    & Pick<MyImage, 'path' | 'desc' | 'createdAt'>
+    & Pick<MyImage, 'path' | 'title' | 'isPrivate' | 'desc' | 'createdAt' | 'awsKey'>
+    & { userid: (
+      { __typename?: 'User' }
+      & Pick<User, 'username'>
+    ) }
+  )> }
+);
+
+export type GetMyImagesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMyImagesQuery = (
+  { __typename?: 'Query' }
+  & { getMyImages: Array<(
+    { __typename?: 'MyImage' }
+    & Pick<MyImage, 'path' | 'title' | 'isPrivate' | 'desc' | 'createdAt' | 'awsKey'>
     & { userid: (
       { __typename?: 'User' }
       & Pick<User, 'username'>
@@ -161,6 +194,37 @@ export type GetAllImagesQuery = (
 );
 
 
+export const DeleteImageDocument = gql`
+    mutation deleteImage($awsKey: String!) {
+  deleteImage(awsKey: $awsKey)
+}
+    `;
+export type DeleteImageMutationFn = Apollo.MutationFunction<DeleteImageMutation, DeleteImageMutationVariables>;
+
+/**
+ * __useDeleteImageMutation__
+ *
+ * To run a mutation, you first call `useDeleteImageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteImageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteImageMutation, { data, loading, error }] = useDeleteImageMutation({
+ *   variables: {
+ *      awsKey: // value for 'awsKey'
+ *   },
+ * });
+ */
+export function useDeleteImageMutation(baseOptions?: Apollo.MutationHookOptions<DeleteImageMutation, DeleteImageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteImageMutation, DeleteImageMutationVariables>(DeleteImageDocument, options);
+      }
+export type DeleteImageMutationHookResult = ReturnType<typeof useDeleteImageMutation>;
+export type DeleteImageMutationResult = Apollo.MutationResult<DeleteImageMutation>;
+export type DeleteImageMutationOptions = Apollo.BaseMutationOptions<DeleteImageMutation, DeleteImageMutationVariables>;
 export const LoginDocument = gql`
     mutation login($username: String!, $password: String!) {
   login(options: {username: $username, password: $password}) {
@@ -274,11 +338,14 @@ export const GetAllImagesDocument = gql`
     query getAllImages {
   getAllImages {
     path
+    title
+    isPrivate
     userid {
       username
     }
     desc
     createdAt
+    awsKey
   }
 }
     `;
@@ -309,3 +376,45 @@ export function useGetAllImagesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type GetAllImagesQueryHookResult = ReturnType<typeof useGetAllImagesQuery>;
 export type GetAllImagesLazyQueryHookResult = ReturnType<typeof useGetAllImagesLazyQuery>;
 export type GetAllImagesQueryResult = Apollo.QueryResult<GetAllImagesQuery, GetAllImagesQueryVariables>;
+export const GetMyImagesDocument = gql`
+    query getMyImages {
+  getMyImages {
+    path
+    title
+    isPrivate
+    userid {
+      username
+    }
+    desc
+    createdAt
+    awsKey
+  }
+}
+    `;
+
+/**
+ * __useGetMyImagesQuery__
+ *
+ * To run a query within a React component, call `useGetMyImagesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMyImagesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMyImagesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetMyImagesQuery(baseOptions?: Apollo.QueryHookOptions<GetMyImagesQuery, GetMyImagesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMyImagesQuery, GetMyImagesQueryVariables>(GetMyImagesDocument, options);
+      }
+export function useGetMyImagesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyImagesQuery, GetMyImagesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMyImagesQuery, GetMyImagesQueryVariables>(GetMyImagesDocument, options);
+        }
+export type GetMyImagesQueryHookResult = ReturnType<typeof useGetMyImagesQuery>;
+export type GetMyImagesLazyQueryHookResult = ReturnType<typeof useGetMyImagesLazyQuery>;
+export type GetMyImagesQueryResult = Apollo.QueryResult<GetMyImagesQuery, GetMyImagesQueryVariables>;

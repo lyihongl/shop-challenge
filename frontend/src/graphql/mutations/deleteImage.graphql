@@ -1,0 +1,3 @@
+mutation deleteImage($awsKey: String!){
+    deleteImage(awsKey: $awsKey)
+}

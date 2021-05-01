@@ -1,5 +1,5 @@
-query getAllImages{
-  getAllImages{
+query getMyImages{
+  getMyImages{
     path
     title
     isPrivate

@@ -15,28 +15,32 @@ const RegisterScreen = () => {
     }
   };
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <TextField
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          variant="outlined"
-          label="username"
-        />
+    <form onSubmit={handleRegister}>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <TextField
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            variant="outlined"
+            label="username"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            type="password"
+            label="password"
+            value={password}
+            variant="outlined"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Button type="submit" onClick={handleRegister}>
+            Register
+          </Button>
+        </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <TextField
-          type="password"
-          label="password"
-          value={password}
-          variant="outlined"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <Button onClick={handleRegister}>Register</Button>
-      </Grid>
-    </Grid>
+    </form>
   );
 };
 

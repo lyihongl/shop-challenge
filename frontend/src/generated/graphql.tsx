@@ -61,6 +61,16 @@ export type MyImage = {
   isPrivate: Scalars['Boolean'];
   createdAt: Scalars['String'];
   awsKey: Scalars['String'];
+  tags: Array<MyTag>;
+};
+
+export type MyTag = {
+  __typename?: 'MyTag';
+  id: Scalars['String'];
+  userid: User;
+  imageid: MyImage;
+  tag: Scalars['String'];
+  createdAt: Scalars['String'];
 };
 
 export type Query = {
@@ -68,6 +78,13 @@ export type Query = {
   me: Scalars['String'];
   getMyImages: Array<MyImage>;
   getAllImages: Array<MyImage>;
+  searchByTag: Array<MyImage>;
+};
+
+
+export type QuerySearchByTagArgs = {
+  isOr: Scalars['Boolean'];
+  searchQuery: Array<Scalars['String']>;
 };
 
 
@@ -191,6 +208,27 @@ export type GetMyImagesQuery = (
       { __typename?: 'User' }
       & Pick<User, 'username'>
     ) }
+  )> }
+);
+
+export type SearchByTagQueryVariables = Exact<{
+  query: Array<Scalars['String']> | Scalars['String'];
+  isOr: Scalars['Boolean'];
+}>;
+
+
+export type SearchByTagQuery = (
+  { __typename?: 'Query' }
+  & { searchByTag: Array<(
+    { __typename?: 'MyImage' }
+    & Pick<MyImage, 'id' | 'awsKey' | 'path' | 'title' | 'desc' | 'isPrivate'>
+    & { userid: (
+      { __typename?: 'User' }
+      & Pick<User, 'username'>
+    ), tags: Array<(
+      { __typename?: 'MyTag' }
+      & Pick<MyTag, 'tag'>
+    )> }
   )> }
 );
 
@@ -419,3 +457,50 @@ export function useGetMyImagesLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type GetMyImagesQueryHookResult = ReturnType<typeof useGetMyImagesQuery>;
 export type GetMyImagesLazyQueryHookResult = ReturnType<typeof useGetMyImagesLazyQuery>;
 export type GetMyImagesQueryResult = Apollo.QueryResult<GetMyImagesQuery, GetMyImagesQueryVariables>;
+export const SearchByTagDocument = gql`
+    query searchByTag($query: [String!]!, $isOr: Boolean!) {
+  searchByTag(searchQuery: $query, isOr: $isOr) {
+    id
+    awsKey
+    path
+    title
+    desc
+    isPrivate
+    userid {
+      username
+    }
+    tags {
+      tag
+    }
+  }
+}
+    `;
+
+/**
+ * __useSearchByTagQuery__
+ *
+ * To run a query within a React component, call `useSearchByTagQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchByTagQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchByTagQuery({
+ *   variables: {
+ *      query: // value for 'query'
+ *      isOr: // value for 'isOr'
+ *   },
+ * });
+ */
+export function useSearchByTagQuery(baseOptions: Apollo.QueryHookOptions<SearchByTagQuery, SearchByTagQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchByTagQuery, SearchByTagQueryVariables>(SearchByTagDocument, options);
+      }
+export function useSearchByTagLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchByTagQuery, SearchByTagQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchByTagQuery, SearchByTagQueryVariables>(SearchByTagDocument, options);
+        }
+export type SearchByTagQueryHookResult = ReturnType<typeof useSearchByTagQuery>;
+export type SearchByTagLazyQueryHookResult = ReturnType<typeof useSearchByTagLazyQuery>;
+export type SearchByTagQueryResult = Apollo.QueryResult<SearchByTagQuery, SearchByTagQueryVariables>;

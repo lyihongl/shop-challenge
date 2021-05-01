@@ -14,28 +14,32 @@ const LoginScreen = () => {
     }
   };
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <TextField
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          variant="outlined"
-          label="username"
-        />
+    <form onSubmit={handleLogin}>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <TextField
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            variant="outlined"
+            label="username"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            type="password"
+            label="password"
+            value={password}
+            variant="outlined"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Button type="submit" onClick={handleLogin}>
+            Login
+          </Button>
+        </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <TextField
-          type="password"
-          label="password"
-          value={password}
-          variant="outlined"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <Button onClick={handleLogin}>Login</Button>
-      </Grid>
-    </Grid>
+    </form>
   );
 };
 

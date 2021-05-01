@@ -202,7 +202,6 @@ export class ImageResolver {
 
     await em.persistAndFlush(img);
     await em.persistAndFlush(tags);
-    // console.log(img)
     const res = await new Promise<UploadFileResponse>((resolve, reject) => {
       let buffer: Buffer[] = [];
       const s = file.createReadStream();

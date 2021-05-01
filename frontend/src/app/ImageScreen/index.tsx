@@ -10,7 +10,11 @@ import {
 } from "@material-ui/core";
 import { createContext, useState } from "react";
 import UploadImageModal from "./components/UploadImageModal";
-import { MyImageFeed, AllImageFeed } from "./components/ImageFeed";
+import {
+  MyImageFeed,
+  AllImageFeed,
+  SearchImages,
+} from "./components/ImageFeed";
 
 function a11yProps(index: any) {
   return {
@@ -78,6 +82,7 @@ const ImageScreen = () => {
         >
           <Tab label="All Images" {...a11yProps(0)} />
           <Tab label="My Images" {...a11yProps(1)} />
+          <Tab label="Search Images" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
       <TabPanel value={tab} index={0}>
@@ -85,6 +90,9 @@ const ImageScreen = () => {
       </TabPanel>
       <TabPanel value={tab} index={1}>
         <MyImageFeed />
+      </TabPanel>
+      <TabPanel value={tab} index={2}>
+        <SearchImages/>
       </TabPanel>
     </ShouldRefetchContext.Provider>
   );

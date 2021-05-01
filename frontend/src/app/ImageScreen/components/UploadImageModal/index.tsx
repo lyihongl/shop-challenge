@@ -9,11 +9,13 @@ import {
   TextField,
   Switch,
   CircularProgress,
+  Typography,
 } from "@material-ui/core";
 import { useContext, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { ShouldRefetchContext } from "../..";
 import { useUploadImageMutation } from "../../../../generated/graphql";
+import { commaStringToArray } from "../../../../util/utils";
 import ImagePreview from "./ImagePreview";
 
 type UploadResponse = {
@@ -32,6 +34,7 @@ const UploadImageModal = ({ onClose }: { onClose: () => void }) => {
   const [file, setFile] = useState<File | null>();
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
+  const [tags, setTags] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { shouldRefetch, setShouldRefetch } = useContext(ShouldRefetchContext);
@@ -50,7 +53,7 @@ const UploadImageModal = ({ onClose }: { onClose: () => void }) => {
       variables: {
         file,
         uploadInput: {
-          tags: ["test", "test2"],
+          tags: commaStringToArray(tags),
           title,
           desc,
           private: isPrivate,
@@ -105,6 +108,17 @@ const UploadImageModal = ({ onClose }: { onClose: () => void }) => {
               fullWidth
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography>Use comma's to separate tags</Typography>
+            <TextField
+              label="Tags"
+              variant="outlined"
+              size="small"
+              fullWidth
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
             />
           </Grid>
           <Grid item xs={12}>

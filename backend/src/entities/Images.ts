@@ -1,6 +1,16 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
+import {
+  Cascade,
+  Collection,
+  Entity,
+  LoadStrategy,
+  ManyToOne,
+  OneToMany,
+  PrimaryKey,
+  Property,
+} from "@mikro-orm/core";
 import { Field, ObjectType } from "type-graphql";
 import { v4 } from "uuid";
+import { MyTag } from "./Tags";
 import { User } from "./User";
 
 @Entity()
@@ -38,4 +48,11 @@ export class MyImage {
   @Field(() => String)
   @Property()
   awsKey!: string;
+
+  @Field(() => [MyTag])
+  @OneToMany(() => MyTag, (tag) => tag.imageid, {
+    cascade: [Cascade.ALL],
+    orphanRemoval: true,
+  })
+  tags = new Collection<MyTag>(this);
 }

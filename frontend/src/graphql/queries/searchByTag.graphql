@@ -1,0 +1,16 @@
+query searchByTag($query: [String!]!, $isOr: Boolean!) {
+  searchByTag(searchQuery: $query, isOr: $isOr) {
+    id
+    awsKey
+    path
+    title
+    desc
+    isPrivate
+    userid {
+      username
+    }
+    tags {
+      tag
+    }
+  }
+}

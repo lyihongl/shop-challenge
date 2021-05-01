@@ -12,6 +12,31 @@ services:
       - pgdata:/var/lib/postgresql/shop
     ports:
       - "5432:5432"
+  backend:
+    links:
+      - "db:localhost"
+    env_file:
+      - ./backend/backend.env
+    ports:
+      - "4000:4000"
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+      args:
+        - NODE_ENV=local
+  frontend:
+    links:
+      - "backend:localhost"
+    ports:
+      - "3000:3000"
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+      args:
+        - NODE_ENV=local
+volumes:
+  pgdata:
+    driver: "local"
   # zookeeper:
   #   image: confluentinc/cp-zookeeper:latest
   #   environment:
@@ -19,7 +44,7 @@ services:
   #     ZOOKEEPER_TICK_TIME: 2000
   #   ports:
   #     - 2181:2181
-  
+
   # kafka:
   #   image: confluentinc/cp-kafka:latest
   #   depends_on:
@@ -33,6 +58,3 @@ services:
   #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
   #     KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
   #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-volumes:
-  pgdata:
-    driver: "local"

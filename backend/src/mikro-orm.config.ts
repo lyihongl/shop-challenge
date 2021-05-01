@@ -12,6 +12,7 @@ export default {
   },
   entities: [User, MyImage, MyTag],
   dbName: "test",
+  host: "db",
   type: "postgresql",
   user: "postgres",
   password: "postgres",

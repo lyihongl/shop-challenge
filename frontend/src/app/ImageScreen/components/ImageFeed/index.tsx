@@ -2,13 +2,16 @@ import { ApolloQueryResult } from "@apollo/client";
 import { Grid } from "@material-ui/core";
 import { useContext, useEffect, useState } from "react";
 import { ShouldRefetchContext } from "../..";
+import { SearchImages } from "./SearchImages";
 import {
   Exact,
   GetAllImagesQuery,
   GetMyImagesQuery,
+  MyImage,
   useDeleteImageMutation,
   useGetAllImagesQuery,
   useGetMyImagesQuery,
+  User,
 } from "../../../../generated/graphql";
 import ImageFrame from "./ImageFrame";
 
@@ -20,11 +23,18 @@ interface DataType {
   isPrivate: boolean;
 }
 
+interface DataTypeTags extends DataType {
+  userid?: {
+    username: string;
+  };
+  tags?: { tag: string }[];
+}
+
 const ImageFeed = ({
   data,
   enableDelete,
 }: {
-  data: DataType[] | undefined;
+  data: DataTypeTags[] | undefined;
   enableDelete: boolean;
 }) => {
   const [deleteImage] = useDeleteImageMutation();
@@ -71,7 +81,6 @@ const MyImageFeed = () => {
   const { loading, data, error, refetch } = useGetMyImagesQuery();
   const { shouldRefetch } = useContext(ShouldRefetchContext);
   useEffect(() => {
-    console.log("refetch switched");
     refetch();
   }, [shouldRefetch]);
 
@@ -79,4 +88,4 @@ const MyImageFeed = () => {
 };
 
 export default ImageFeed;
-export { AllImageFeed, MyImageFeed };
+export { AllImageFeed, MyImageFeed, SearchImages };

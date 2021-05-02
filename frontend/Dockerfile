@@ -3,13 +3,15 @@ FROM node:14.16.1
 
 WORKDIR /app
 
-RUN yarn globall install serve
-RUN yarn build
-COPY ["package.json", "package-lock.json", "yarn.lock", "./build/"]
+COPY ["package.json", "package-lock.json", "tsconfig.json", "./"]
+RUN npm install
 RUN ls
-RUN yarn install
-COPY . .
+COPY ./src ./src
+COPY ./public ./public
+RUN npm install -g serve
+RUN npm run build
 
 EXPOSE 3000
 
-CMD ["$(yarn bin)/serve", "-s", "./build"]
+RUN ls
+CMD ["serve", "-s", "./build",  "-l", "3000"]

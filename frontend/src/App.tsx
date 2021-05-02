@@ -1,10 +1,9 @@
-import React, { createContext, Suspense, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import "./App.css";
 import {
   ApolloClient,
   ApolloProvider,
   gql,
-  HttpLink,
   InMemoryCache,
   useQuery,
 } from "@apollo/client";

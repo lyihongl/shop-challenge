@@ -2,12 +2,12 @@ FROM node:14.16.1
 
 WORKDIR /app
 
-COPY ["package.json", "yarn.lock", "./"]
+COPY ["package.json", "yarn.lock", "tsconfig.json", "./"]
 RUN yarn install
 RUN ls
-RUN pwd
-RUN yarn tsc ./backend
-COPY . .
+COPY ./src ./src
+RUN ls
+RUN yarn tsc 
 
 EXPOSE 4000
 CMD ["node", "dist/index.js"]

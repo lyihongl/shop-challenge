@@ -5,12 +5,10 @@ import {
   PutObjectCommandInput,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import deepcopy from "deepcopy";
 import isAuth from "../middleware/isAuth";
 import {
   Arg,
   Ctx,
-  emitSchemaDefinitionFile,
   Field,
   InputType,
   Mutation,
@@ -21,8 +19,6 @@ import {
 } from "type-graphql";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
 import { ResolverContext } from "src/types";
-import fs, { ReadStream } from "fs";
-import { PassThrough } from "stream";
 import { MyImage } from "../entities/Images";
 import { MyTag } from "../entities/Tags";
 

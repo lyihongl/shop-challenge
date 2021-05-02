@@ -12,7 +12,7 @@ export default {
   },
   entities: [User, MyImage, MyTag],
   dbName: "test",
-  host: "localhost",
+  host: process.env.POSTGRES_HOST!,
   type: "postgresql",
   user: "postgres",
   password: "postgres",

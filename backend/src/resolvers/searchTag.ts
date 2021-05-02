@@ -3,7 +3,6 @@ import { ResolverContext } from "../types";
 import { MyImage } from "../entities/Images";
 import isAuth from "../middleware/isAuth";
 import { LoadStrategy } from "@mikro-orm/core";
-import { MyTag } from "src/entities/Tags";
 
 @Resolver()
 export class SearchTagResolver {

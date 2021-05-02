@@ -80,8 +80,7 @@ const generateTags = async (
     | ImageData
     | HTMLImageElement
     | HTMLCanvasElement
-    | HTMLVideoElement,
-  topk?: number | undefined
+    | HTMLVideoElement
 ) => {
   const mobilenetModel = await mobilenet.load();
   const predictions = await mobilenetModel.classify(img);
@@ -214,9 +213,13 @@ export class ImageResolver {
       const s = file.createReadStream();
       s.on("data", (d: Buffer) => {
         buffer.push(d);
-      }).on("close", () => {
-        resolve(Buffer.concat(buffer));
-      });
+      })
+        .on("close", () => {
+          resolve(Buffer.concat(buffer));
+        })
+        .on("error", (e) => {
+          reject(e);
+        });
     });
     const imgData = tf.node.decodeImage(rawDataBuffer, 3) as tf.Tensor3D;
     const generatedTags = await generateTags(imgData);

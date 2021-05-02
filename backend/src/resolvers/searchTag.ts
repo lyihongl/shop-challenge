@@ -3,6 +3,8 @@ import { ResolverContext } from "../types";
 import { MyImage } from "../entities/Images";
 import isAuth from "../middleware/isAuth";
 import { LoadStrategy } from "@mikro-orm/core";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 @Resolver()
 export class SearchTagResolver {
@@ -11,7 +13,7 @@ export class SearchTagResolver {
   async searchByTag(
     @Arg("searchQuery", () => [String]) searchQuery: string[],
     @Arg("isOr") isOr: boolean,
-    @Ctx() { em }: ResolverContext
+    @Ctx() { em, s3Client }: ResolverContext
   ) {
     console.log(searchQuery);
     // const tags = await em.find(MyTag, {
@@ -54,6 +56,26 @@ export class SearchTagResolver {
       });
       return newTags;
     }
-    return tags;
+    const responseImages = await Promise.all(
+      tags.map(
+        (e) =>
+          new Promise<MyImage>((resolve, reject) => {
+            const getObject = new GetObjectCommand({
+              Bucket: process.env.S3_BUCKET,
+              Key: e.awsKey,
+            });
+
+            getSignedUrl(s3Client, getObject)
+              .then((url) => {
+                resolve({
+                  ...e,
+                  path: url,
+                });
+              })
+              .catch((err) => reject(err));
+          })
+      )
+    );
+    return responseImages;
   }
 }

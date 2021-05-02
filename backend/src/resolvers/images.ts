@@ -21,7 +21,6 @@ import { FileUpload, GraphQLUpload } from "graphql-upload";
 import { ResolverContext } from "src/types";
 import { MyImage } from "../entities/Images";
 import { MyTag } from "../entities/Tags";
-import { awsBucketName } from "src";
 
 @ObjectType()
 export class UploadFileResponse {
@@ -71,7 +70,7 @@ export class UploadImgInput {
 //   @Field()
 //   picture: GraphQLUpload;
 // }
-const awsPrefix = `https://${awsBucketName}.s3.amazonaws.com/`
+const awsPrefix = `https://${process.env.S3_BUCKET}.s3.amazonaws.com/`;
 
 @Resolver()
 export class ImageResolver {
@@ -91,7 +90,7 @@ export class ImageResolver {
             new Promise<MyImage>((resolve, reject) => {
               if (e.isPrivate) {
                 const getObject = new GetObjectCommand({
-                  Bucket: "awsBucketName",
+                  Bucket: process.env.S3_BUCKET,
                   Key: e.awsKey,
                 });
 
@@ -131,7 +130,7 @@ export class ImageResolver {
             new Promise<MyImage>((resolve, reject) => {
               if (e.isPrivate) {
                 const getObject = new GetObjectCommand({
-                  Bucket: "awsBucketName",
+                  Bucket: process.env.S3_BUCKET,
                   Key: e.awsKey,
                 });
 
@@ -164,7 +163,7 @@ export class ImageResolver {
     const image = await em.findOne(MyImage, { awsKey });
     if (authJwt?.userid && image?.userid.id === authJwt.userid) {
       await s3Client.send(
-        new DeleteObjectCommand({ Bucket: "awsBucketName", Key: awsKey })
+        new DeleteObjectCommand({ Bucket: process.env.S3_BUCKET, Key: awsKey })
       );
 
       await em.getRepository(MyImage).remove(image!).flush();
@@ -206,7 +205,7 @@ export class ImageResolver {
         buffer.push(d);
       }).on("close", () => {
         const uploadParams: PutObjectCommandInput = {
-          Bucket: "awsBucketName",
+          Bucket: "shop-challenge",
           Key: awsKey,
           ACL: uploadInput.private ? undefined : "public-read",
           Body: Buffer.concat(buffer),

@@ -14,7 +14,6 @@ import { ImageResolver } from "./resolvers/images";
 import { graphqlUploadExpress } from "graphql-upload";
 import { SearchTagResolver } from "./resolvers/searchTag";
 
-export const awsBucketName = process.env.S3_BUCKET!;
 const main = async () => {
   if (
     process.env.AWS_ACCESS_KEY === undefined ||
@@ -24,6 +23,7 @@ const main = async () => {
   ) {
     throw new Error("Missing environment variables for aws");
   }
+  console.log(process.env.S3_BUCKET);
   const s3Client = new S3Client({
     region: process.env.S3_REGION!,
     credentials: {

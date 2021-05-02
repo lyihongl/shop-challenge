@@ -35,7 +35,7 @@ const RegisterScreen = () => {
           />
         </Grid>
         <Grid item xs={12}>
-          <Button type="submit" onClick={handleRegister}>
+          <Button type="submit">
             Register
           </Button>
         </Grid>

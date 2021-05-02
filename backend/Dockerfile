@@ -2,10 +2,11 @@ FROM node:14.16.1
 
 WORKDIR /app
 
-RUN yarn tsc
-COPY ["package.json", "package-lock.json", "yarn.lock", "./dist/"]
-RUN ls
+COPY ["package.json", "yarn.lock", "./"]
 RUN yarn install
+RUN ls
+RUN pwd
+RUN yarn tsc ./backend
 COPY . .
 
 EXPOSE 4000

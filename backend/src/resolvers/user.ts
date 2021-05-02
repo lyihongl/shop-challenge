@@ -87,6 +87,7 @@ export class UserResolver {
         };
       }
     }
+    console.log("user", user)
     const token = jwt.sign(
       {
         userid: user.id,

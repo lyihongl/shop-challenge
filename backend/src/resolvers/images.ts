@@ -21,6 +21,8 @@ import { FileUpload, GraphQLUpload } from "graphql-upload";
 import { ResolverContext } from "src/types";
 import { MyImage } from "../entities/Images";
 import { MyTag } from "../entities/Tags";
+import * as tf from "@tensorflow/tfjs-node";
+import * as mobilenet from "@tensorflow-models/mobilenet";
 
 @ObjectType()
 export class UploadFileResponse {
@@ -71,6 +73,21 @@ export class UploadImgInput {
 //   picture: GraphQLUpload;
 // }
 const awsPrefix = `https://${process.env.S3_BUCKET}.s3.amazonaws.com/`;
+
+const generateTags = async (
+  img:
+    | tf.Tensor3D
+    | ImageData
+    | HTMLImageElement
+    | HTMLCanvasElement
+    | HTMLVideoElement,
+  topk?: number | undefined
+) => {
+  const mobilenetModel = await mobilenet.load();
+  const predictions = await mobilenetModel.classify(img);
+  console.log("PREDICTIONS", predictions);
+  return predictions;
+};
 
 @Resolver()
 export class ImageResolver {
@@ -170,6 +187,10 @@ export class ImageResolver {
     @Arg("uploadInput") uploadInput: UploadImgInput,
     @Ctx() { s3Client, em, authJwt }: ResolverContext
   ) {
+    // const imgData = tfnode.node.decodeImage(file.arrayB, 3);
+    // console.log("a");
+    // await generateTags(imgData);
+    // console.log("b");
     const img = em.create(MyImage, {
       userid: authJwt!.userid,
       title: uploadInput.title,
@@ -196,6 +217,11 @@ export class ImageResolver {
       s.on("data", (d: Buffer) => {
         buffer.push(d);
       }).on("close", () => {
+        const imgData = tf.node.decodeImage(
+          Buffer.concat(buffer),
+          3
+        ) as tf.Tensor3D;
+        generateTags(imgData);
         const uploadParams: PutObjectCommandInput = {
           Bucket: process.env.S3_BUCKET,
           Key: awsKey,

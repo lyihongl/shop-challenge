@@ -27,6 +27,8 @@
     "@mikro-orm/core": "^4.5.3",
     "@mikro-orm/migrations": "^4.5.3",
     "@mikro-orm/postgresql": "^4.5.3",
+    "@tensorflow-models/mobilenet": "^2.1.0",
+    "@tensorflow/tfjs-node": "^3.6.1",
     "@types/cookie-parser": "^1.4.2",
     "@types/jsonwebtoken": "^8.5.1",
     "@types/redis": "^2.8.28",

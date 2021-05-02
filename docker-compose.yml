@@ -18,7 +18,7 @@ services:
     links:
       - "db:localhost"
     env_file:
-      - ./backend/backend.env
+      - ./backend.env
     ports:
       - "4000:4000"
     build:

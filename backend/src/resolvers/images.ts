@@ -209,42 +209,53 @@ export class ImageResolver {
       });
     });
     console.log("prefix", awsPrefix);
-    await em.persistAndFlush(img);
-    await em.persistAndFlush(tags);
-    const res = await new Promise<UploadFileResponse>((resolve, reject) => {
+    const rawDataBuffer = await new Promise<Buffer>((resolve, reject) => {
       let buffer: Buffer[] = [];
       const s = file.createReadStream();
       s.on("data", (d: Buffer) => {
         buffer.push(d);
       }).on("close", () => {
-        const imgData = tf.node.decodeImage(
-          Buffer.concat(buffer),
-          3
-        ) as tf.Tensor3D;
-        generateTags(imgData);
-        const uploadParams: PutObjectCommandInput = {
-          Bucket: process.env.S3_BUCKET,
-          Key: awsKey,
-          Body: Buffer.concat(buffer),
-        };
-        const obj = new PutObjectCommand(uploadParams);
-        console.log("aws abt to return");
-        return s3Client
-          .send(obj)
-          .then((res) => {
-            console.log("aws res", res);
-            resolve({
-              filename: "",
-              encoding: "",
-              mimetype: "",
-              url: awsPrefix + awsKey,
-            });
-          })
-          .catch((e) => {
-            console.log(e);
-            reject(e);
-          });
+        resolve(Buffer.concat(buffer));
       });
+    });
+    const imgData = tf.node.decodeImage(rawDataBuffer, 3) as tf.Tensor3D;
+    const generatedTags = await generateTags(imgData);
+    console.log(generatedTags);
+    generatedTags.forEach((tag) => {
+      if (tag.probability >= 0.75) {
+        tags.push(
+          em.create(MyTag, {
+            imageid: img,
+            tag: tag.className,
+            userid: authJwt!.userid,
+          })
+        );
+      }
+    });
+    await em.persistAndFlush(img);
+    await em.persistAndFlush(tags);
+    const res = await new Promise<UploadFileResponse>((resolve, reject) => {
+      const uploadParams: PutObjectCommandInput = {
+        Bucket: process.env.S3_BUCKET,
+        Key: awsKey,
+        Body: rawDataBuffer,
+      };
+      const obj = new PutObjectCommand(uploadParams);
+      return s3Client
+        .send(obj)
+        .then((res) => {
+          console.log("aws res", res);
+          resolve({
+            filename: "",
+            encoding: "",
+            mimetype: "",
+            url: awsPrefix + awsKey,
+          });
+        })
+        .catch((e) => {
+          console.log(e);
+          reject(e);
+        });
     });
 
     return res;

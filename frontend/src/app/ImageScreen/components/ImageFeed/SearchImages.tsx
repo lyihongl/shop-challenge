@@ -25,49 +25,46 @@ const SearchImages = () => {
 
   console.log(data);
 
-  const handleFetch = (e: FormEvent<HTMLFormElement>) => {
+  const handleFetch = () => {
     getData({
       variables: {
         isOr: searchMode === SearchMode.OR,
         query: commaStringToArray(query),
       },
     });
-    e.preventDefault();
   };
 
   return (
     <>
-      <form onSubmit={(e) => handleFetch(e)}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Typography>Search modes:</Typography>
-            <Typography>
-              OR: entering "happy, funny" in OR mode will search for images with
-              either the happy or funny tag
-            </Typography>
-            <Typography>
-              AND: entering "happy, funny" in AND mode will search for images
-              that have both the happy and funny tag
-            </Typography>
-            <Typography>
-              Search mode:{" "}
-              <Button onClick={toggleSearchMode}>{searchMode}</Button>
-            </Typography>
-          </Grid>
-          <Grid item xs={3}>
-            <TextField
-              size="small"
-              fullWidth
-              variant="outlined"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={1}>
-            <Button type="submit">Search</Button>
-          </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <Typography>Search modes:</Typography>
+          <Typography>
+            OR: entering "happy, funny" in OR mode will search for images with
+            either the happy or funny tag
+          </Typography>
+          <Typography>
+            AND: entering "happy, funny" in AND mode will search for images that
+            have both the happy and funny tag
+          </Typography>
+          <Typography>
+            Search mode:{" "}
+            <Button onClick={toggleSearchMode}>{searchMode}</Button>
+          </Typography>
         </Grid>
-      </form>
+        <Grid item xs={3}>
+          <TextField
+            size="small"
+            fullWidth
+            variant="outlined"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={1}>
+          <Button onClick={handleFetch}>Search</Button>
+        </Grid>
+      </Grid>
       <ImageFeed data={data?.searchByTag} enableDelete={false} />
     </>
   );

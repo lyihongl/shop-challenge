@@ -9,7 +9,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=test
     volumes:
-      - pgdata:/var/lib/postgresql/shop
+      - pgdata:/var/lib/postgresql
     ports:
       - "5432:5432"
   backend:

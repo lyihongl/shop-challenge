@@ -14,9 +14,18 @@ import { ImageResolver } from "./resolvers/images";
 import { graphqlUploadExpress } from "graphql-upload";
 import { SearchTagResolver } from "./resolvers/searchTag";
 
+export const awsBucketName = process.env.S3_BUCKET!;
 const main = async () => {
+  if (
+    process.env.AWS_ACCESS_KEY === undefined ||
+    process.env.AWS_SECRET === undefined ||
+    process.env.S3_REGION === undefined ||
+    process.env.S3_BUCKET === undefined
+  ) {
+    throw new Error("Missing environment variables for aws");
+  }
   const s3Client = new S3Client({
-    region: "us-east-1",
+    region: process.env.S3_REGION!,
     credentials: {
       accessKeyId: process.env.AWS_ACCESS_KEY!,
       secretAccessKey: process.env.AWS_SECRET!,

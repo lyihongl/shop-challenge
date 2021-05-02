@@ -13,7 +13,6 @@ services:
     ports:
       - "5432:5432"
   backend:
-    command: ["./waitforit.sh", "db:5432"]
     depends_on:
       - db
     links:

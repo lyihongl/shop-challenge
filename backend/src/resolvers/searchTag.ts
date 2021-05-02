@@ -53,6 +53,24 @@ export class SearchTagResolver {
           }
         }
         newTags.push(img);
+        newTags.map(
+          (e) =>
+            new Promise<MyImage>((resolve, reject) => {
+              const getObject = new GetObjectCommand({
+                Bucket: process.env.S3_BUCKET,
+                Key: e.awsKey,
+              });
+
+              getSignedUrl(s3Client, getObject)
+                .then((url) => {
+                  resolve({
+                    ...e,
+                    path: url,
+                  });
+                })
+                .catch((err) => reject(err));
+            })
+        );
       });
       return newTags;
     }

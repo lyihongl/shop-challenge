@@ -7,6 +7,7 @@
     "test": "run-tests",
     "watch": "tsc -w",
     "dev": "nodemon dist/index.js",
+    "prod": "node dist/index.js",
     "migrate": "mikro-orm migration:create"
   },
   "author": "",

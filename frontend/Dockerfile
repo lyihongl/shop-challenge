@@ -3,11 +3,13 @@ FROM node:14.16.1
 
 WORKDIR /app
 
-COPY ["package.json", "package-lock.json", "yarn.lock", "./"]
+RUN yarn globall install serve
+RUN yarn build
+COPY ["package.json", "package-lock.json", "yarn.lock", "./dist/"]
 RUN ls
-RUN npm install --production
+RUN yarn install
 COPY . .
 
 EXPOSE 3000
 
-CMD ["yarn", "start"]
+CMD ["$(yarn bin)/serve", "-g", "start"]

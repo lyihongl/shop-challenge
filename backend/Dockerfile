@@ -2,10 +2,11 @@ FROM node:14.16.1
 
 WORKDIR /app
 
-COPY ["package.json", "package-lock.json", "yarn.lock", "./"]
+RUN yarn tsc
+COPY ["package.json", "package-lock.json", "yarn.lock", "./dist/"]
 RUN ls
-RUN npm install --production
+RUN yarn install
 COPY . .
 
 EXPOSE 4000
-CMD ["yarn", "dev"]
+CMD ["node", "dist/index.js"]

@@ -88,23 +88,19 @@ export class ImageResolver {
         images.map(
           (e) =>
             new Promise<MyImage>((resolve, reject) => {
-              if (e.isPrivate) {
-                const getObject = new GetObjectCommand({
-                  Bucket: process.env.S3_BUCKET,
-                  Key: e.awsKey,
-                });
+              const getObject = new GetObjectCommand({
+                Bucket: process.env.S3_BUCKET,
+                Key: e.awsKey,
+              });
 
-                getSignedUrl(s3Client, getObject)
-                  .then((url) => {
-                    resolve({
-                      ...e,
-                      path: url,
-                    });
-                  })
-                  .catch((err) => reject(err));
-              } else {
-                resolve(e);
-              }
+              getSignedUrl(s3Client, getObject)
+                .then((url) => {
+                  resolve({
+                    ...e,
+                    path: url,
+                  });
+                })
+                .catch((err) => reject(err));
             })
         )
       );
@@ -128,23 +124,19 @@ export class ImageResolver {
         images.map(
           (e) =>
             new Promise<MyImage>((resolve, reject) => {
-              if (e.isPrivate) {
-                const getObject = new GetObjectCommand({
-                  Bucket: process.env.S3_BUCKET,
-                  Key: e.awsKey,
-                });
+              const getObject = new GetObjectCommand({
+                Bucket: process.env.S3_BUCKET,
+                Key: e.awsKey,
+              });
 
-                getSignedUrl(s3Client, getObject)
-                  .then((url) => {
-                    resolve({
-                      ...e,
-                      path: url,
-                    });
-                  })
-                  .catch((err) => reject(err));
-              } else {
-                resolve(e);
-              }
+              getSignedUrl(s3Client, getObject)
+                .then((url) => {
+                  resolve({
+                    ...e,
+                    path: url,
+                  });
+                })
+                .catch((err) => reject(err));
             })
         )
       );
@@ -195,7 +187,7 @@ export class ImageResolver {
         userid: authJwt!.userid,
       });
     });
-
+    console.log("prefix", awsPrefix);
     await em.persistAndFlush(img);
     await em.persistAndFlush(tags);
     const res = await new Promise<UploadFileResponse>((resolve, reject) => {
@@ -205,15 +197,16 @@ export class ImageResolver {
         buffer.push(d);
       }).on("close", () => {
         const uploadParams: PutObjectCommandInput = {
-          Bucket: "shop-challenge",
+          Bucket: process.env.S3_BUCKET,
           Key: awsKey,
-          ACL: uploadInput.private ? undefined : "public-read",
           Body: Buffer.concat(buffer),
         };
         const obj = new PutObjectCommand(uploadParams);
+        console.log("aws abt to return");
         return s3Client
           .send(obj)
-          .then(() => {
+          .then((res) => {
+            console.log("aws res", res);
             resolve({
               filename: "",
               encoding: "",
@@ -222,6 +215,7 @@ export class ImageResolver {
             });
           })
           .catch((e) => {
+            console.log(e);
             reject(e);
           });
       });

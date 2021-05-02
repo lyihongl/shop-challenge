@@ -9,7 +9,12 @@ import { ApolloServer } from "apollo-server-express";
 import { UserResolver } from "./resolvers/user";
 import { PostgreSqlDriver } from "@mikro-orm/postgresql";
 import { jwt_secret } from "./constants";
-import { S3Client } from "@aws-sdk/client-s3";
+import {
+  CreateBucketCommand,
+  CreateBucketCommandInput,
+  ListBucketsCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { ImageResolver } from "./resolvers/images";
 import { graphqlUploadExpress } from "graphql-upload";
 import { SearchTagResolver } from "./resolvers/searchTag";
@@ -23,7 +28,7 @@ const main = async () => {
   ) {
     throw new Error("Missing environment variables for aws");
   }
-  console.log(process.env.S3_BUCKET);
+
   const s3Client = new S3Client({
     region: process.env.S3_REGION!,
     credentials: {
@@ -31,6 +36,17 @@ const main = async () => {
       secretAccessKey: process.env.AWS_SECRET!,
     },
   });
+  const buckets = (
+    await s3Client.send(new ListBucketsCommand({}))
+  ).Buckets?.map((b) => b.Name);
+  if (!buckets?.includes(process.env.S3_BUCKET)) {
+    const createBucketParams: CreateBucketCommandInput = {
+      Bucket: process.env.S3_BUCKET,
+    };
+    const createBucket = new CreateBucketCommand(createBucketParams);
+    await s3Client.send(createBucket);
+  }
+
   const orm = await MikroORM.init({ ...mikroConfig, driver: PostgreSqlDriver });
   await orm.getMigrator().up();
   const app = express();

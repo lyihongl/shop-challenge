@@ -19,7 +19,7 @@ import { ImageResolver } from "./resolvers/images";
 import { graphqlUploadExpress } from "graphql-upload";
 import { SearchTagResolver } from "./resolvers/searchTag";
 
-const main = async () => {
+export const main = async () => {
   if (
     process.env.AWS_ACCESS_KEY === undefined ||
     process.env.AWS_SECRET === undefined ||
@@ -49,6 +49,7 @@ const main = async () => {
 
   const orm = await MikroORM.init({ ...mikroConfig, driver: PostgreSqlDriver });
   await orm.getMigrator().up();
+  // orm.em.fork()
   const app = express();
   app.set("trust proxy", 1);
   app.use(

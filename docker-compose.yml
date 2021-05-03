@@ -7,11 +7,22 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_DB=test
+      - POSTGRES_DB=dev
     volumes:
       - pgdata:/var/lib/postgresql
     ports:
       - "5432:5432"
+  testdb:
+    image: postgres:13.2-alpine
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=test
+    volumes:
+      - pgdata:/var/lib/postgresql
+    ports:
+      - "5433:5432"
   backend:
     depends_on:
       - db
@@ -26,6 +37,7 @@ services:
       dockerfile: ./Dockerfile
       args:
         - NODE_ENV=local
+    command: ["./waitforit.sh", "db:5432", "--", "node", "dist/index.js"]
     environment:
       - POSTGRES_HOST=db
   frontend:

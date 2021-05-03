@@ -28,7 +28,7 @@ AWS_SECRET=
 ```
 
 4. Once `backend.env` has been set, run `docker-compose up -d` to start the application.
-5. If everything goes smoothly the frontend will be accessable from `localhost:3000`
+5. If everything goes smoothly the frontend will be accessable from `localhost:3000`, or the graphql playground from `localhost:4000/graphql`
 
 ### Development setup
 

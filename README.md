@@ -6,7 +6,9 @@ Technologies: Typescript, Node.js, GraphQL, Postgresql, React.js, Docker
 
 ## Setup
 
-IMPORTANT: IF ON WINDOWS PLEASE CLONE WITH `git clone https://github.com/lyihongl/shop-challenge.git --config core.autocrlf=input`. There is a bash script that gets messed up on windows otherwise because of the way windows handles file endings.
+IMPORTANT: IF ON WINDOWS PLEASE CLONE WITH `git clone https://github.com/lyihongl/shop-challenge.git --config core.autocrlf=input`. There is a bash script that gets messed up on windows otherwise because of the way windows handles line endings.
+
+This project makes use of ports `3000, 4000, 5432`. Please make sure those ports are not taken up by other services.
 
 ### With docker
 
@@ -18,21 +20,19 @@ IMPORTANT: IF ON WINDOWS PLEASE CLONE WITH `git clone https://github.com/lyihong
 
 3. In `backend.env` supply the following variables:
 
-| env variable name | description                                                   |
-| :---------------- | :------------------------------------------------------------ |
-| S3_REGION         | region of the S3 instance                                     |
-| S3_BUCKET         | name of the S3 bucket (the bucket does not need to exist yet) |
-| AWS_ACCESS_KEY    | your aws access key                                           |
-| AWS_SECRET        | your aws secret key                                           |
-
-a. The format expected is `S3_REGION=us-east-1`.
+```
+S3_REGION=
+S3_BUCKET=
+AWS_ACCESS_KEY=
+AWS_SECRET=
+```
 
 4. Once `backend.env` has been set, run `docker-compose up -d` to start the application.
 5. If everything goes smoothly the frontend will be accessable from `localhost:3000`
 
 ### Development setup
 
-Note: for some reason the way yarn resolves packages causes the frontend to break, but it is fine for backend...
+Note: for some reason the way yarn resolves packages causes the frontend to break, but yarn works fine for backend... so backend will be handled by yarn and frontend by npm :).
 
 1. In the backend folder, run `yarn install`.
 2. In the frontend folder, run `npm install`.
@@ -55,3 +55,9 @@ Note: for some reason the way yarn resolves packages causes the frontend to brea
 | Private images                  | Only the owner of the image is able to view the image             |
 | User added tags                 | The user can supply custom tags to the image                      |
 | Machine Learning Generated Tags | When an image is uploaded                                         |
+
+The [mobile net](https://www.npmjs.com/package/@tensorflow-models/mobilenet) package was used on the backend to generate tags, only tags that had above 0.75 confidence we actually stored.
+
+## Testing
+
+Tbh for the life of me I couldn't get a mock isAuth working. I struggled with it for about 4 hours but I am busy with other things in life at the moment so testing just does not work on the project as of right now :(.

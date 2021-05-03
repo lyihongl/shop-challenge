@@ -2,11 +2,10 @@ import { Arg, Ctx, Query, Resolver, UseMiddleware } from "type-graphql";
 import { ResolverContext } from "../types";
 import { MyImage } from "../entities/Images";
 import isAuth from "../middleware/isAuth";
-import { ConstraintViolationException, LoadStrategy } from "@mikro-orm/core";
+import { LoadStrategy } from "@mikro-orm/core";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { MyTag } from "../entities/Tags";
-import deepcopy from "deepcopy";
 
 @Resolver()
 export class SearchTagResolver {

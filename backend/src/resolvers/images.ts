@@ -168,6 +168,7 @@ export class ImageResolver {
     @Arg("awsKey") awsKey: string,
     @Ctx() { s3Client, em, authJwt }: ResolverContext
   ) {
+    console.log("test");
     const image = await em.findOne(MyImage, { awsKey });
     if (authJwt?.userid && image?.userid.id === authJwt.userid) {
       await s3Client.send(

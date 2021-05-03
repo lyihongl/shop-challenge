@@ -31,5 +31,4 @@ export const testConfig = {
   user: "postgres",
   password: "postgres",
   port: 5433,
-  debug: !__prod__,
 } as Parameters<typeof MikroORM.init>[0];

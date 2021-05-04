@@ -2,7 +2,7 @@
 
 This project consists of the backend and frontend for an image repository web app for Shopify Fall 2021
 
-Technologies: Typescript, Node.js, GraphQL, Postgresql, React.js, Docker
+Technologies: Typescript, Node.js, GraphQL, Postgresql, Tensorflow, React.js, Docker
 
 ## Setup
 
